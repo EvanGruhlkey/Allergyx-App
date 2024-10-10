@@ -1,1 +1,7 @@
-// app global css in SCSS form
+@import './quasar.variables.scss';
+
+// Add custom global styles here
+.my-card {
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}

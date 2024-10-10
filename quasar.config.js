@@ -20,10 +20,7 @@ module.exports = configure(function (/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: [
-      
-      
-    ],
+    boot: ['axios', 'auth'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: [
@@ -51,7 +48,7 @@ module.exports = configure(function (/* ctx */) {
         node: 'node20'
       },
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
@@ -96,11 +93,27 @@ module.exports = configure(function (/* ctx */) {
       // (like functional components as one of the examples),
       // you can manually specify Quasar components/directives to be available everywhere:
       //
-      // components: [],
+      components: ['QPage',
+    'QHeader',
+    'QToolbar',
+    'QToolbarTitle',
+    'QBtn',
+    'QBtnDropdown',
+    'QList',
+    'QItem',
+    'QItemSection',
+    'QAvatar',
+    'QCard',
+    'QCardSection',
+    'QCircularProgress',
+    'QChip',
+    'QSpace',
+    'QTooltip'
+    ],
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: ['Notify', 'Loading']
     },
 
     // animations: 'all', // --- includes all animations
