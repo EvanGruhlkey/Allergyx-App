@@ -1,4 +1,4 @@
-# Allergyx App (quasar-allergyx)
+# Allergyx App
 
 The future for allergy projection
 
