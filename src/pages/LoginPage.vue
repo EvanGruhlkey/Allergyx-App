@@ -1,29 +1,24 @@
 <template>
   <q-page class="flex flex-center bg-grey-2">
-    <q-card class="login-card q-pa-lg" style="width: 400px">
+    <q-card class="login-card" style="width: 400px">
       <q-card-section class="text-center">
         <div class="text-h5 text-primary text-weight-bold q-mb-md">Welcome to AllergyX</div>
-        <q-avatar size="80px" class="q-mb-md">
-          <img src="/api/placeholder/80/80" alt="AllergyX Logo">
-        </q-avatar>
       </q-card-section>
 
       <q-card-section>
-        <q-form @submit="onSubmit" class="q-gutter-md">
+        <q-form @submit.prevent="onSubmit" class="q-gutter-md">
           <q-input
             v-model="email"
-            type="email"
             label="Email"
+            type="email"
             filled
-            :rules="[val => !!val || 'Email is required']"
           />
 
           <q-input
             v-model="password"
-            :type="isPwd ? 'password' : 'text'"
             label="Password"
+            :type="isPwd ? 'password' : 'text'"
             filled
-            :rules="[val => !!val || 'Password is required']"
           >
             <template v-slot:append>
               <q-icon
@@ -34,25 +29,20 @@
             </template>
           </q-input>
 
-          <div class="flex justify-between items-center">
-            <q-checkbox v-model="rememberMe" label="Remember me" />
-            <q-btn flat color="primary" label="Forgot Password?" size="sm" />
-          </div>
-
           <q-btn
             type="submit"
             color="primary"
-            size="lg"
             class="full-width"
             label="Sign In"
+            :loading="loading"
           />
         </q-form>
       </q-card-section>
 
-      <q-card-section class="text-center q-pa-none">
+      <q-card-section class="text-center">
         <p class="text-grey-7">
           Don't have an account?
-          <router-link to="/register" class="text-primary">Sign up</router-link>
+          <router-link to="/auth/register" class="text-primary">Sign up</router-link>
         </p>
       </q-card-section>
     </q-card>
@@ -60,21 +50,56 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+
+export default defineComponent({
   name: 'LoginPage',
-  data () {
-    return {
-      email: '',
-      password: '',
-      isPwd: true,
-      rememberMe: false
+
+  setup() {
+    const router = useRouter()
+    const $q = useQuasar()
+    const email = ref('')
+    const password = ref('')
+    const isPwd = ref(true)
+    const loading = ref(false)
+
+    const onSubmit = async () => {
+      loading.value = true
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        $q.localStorage.set('isLoggedIn', true)
+        $q.localStorage.set('userName', 'John Doe') // Replace with actual user name
+        
+        router.push('/dashboard')
+      } catch (error) {
+        $q.notify({
+          color: 'negative',
+          message: 'Login failed',
+          icon: 'error'
+        })
+      } finally {
+        loading.value = false
+      }
     }
-  },
-  methods: {
-    onSubmit () {
-      // Handle login logic here
-      this.$router.push('/') // Navigate to dashboard after login
+
+    return {
+      email,
+      password,
+      isPwd,
+      loading,
+      onSubmit
     }
   }
-}
+})
 </script>
+
+<style lang="scss" scoped>
+.login-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+</style>

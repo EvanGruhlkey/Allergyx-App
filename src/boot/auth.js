@@ -3,11 +3,13 @@ import { LocalStorage } from 'quasar'
 
 export default boot(({ router }) => {
   router.beforeEach((to, from, next) => {
-    const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-    const isAuthenticated = LocalStorage.getItem('auth_token')
+    const isAuthenticated = LocalStorage.getItem('isLoggedIn')
+    const isAuthRoute = to.path.startsWith('/auth/')
 
-    if (requiresAuth && !isAuthenticated) {
-      next('/login')
+    if (!isAuthenticated && !isAuthRoute && to.meta.requiresAuth) {
+      next('/auth/login')
+    } else if (isAuthenticated && isAuthRoute) {
+      next('/dashboard')
     } else {
       next()
     }

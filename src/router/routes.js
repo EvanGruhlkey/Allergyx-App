@@ -1,34 +1,7 @@
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      {
-        path: 'dashboard',
-        name: 'dashboard',
-        component: () => import('pages/IndexPage.vue')
-      },
-      {
-        path: 'track',
-        name: 'track',
-        component: () => import('pages/TrackPage.vue')
-      },
-      {
-        path: 'history',
-        name: 'history',
-        component: () => import('pages/HistoryPage.vue')
-      },
-      {
-        path: 'predictions',
-        name: 'predictions',
-        component: () => import('pages/PredictionsPage.vue')
-      },
-      {
-        path: 'settings',
-        name: 'settings',
-        component: () => import('pages/SettingsPage.vue')
-      }
-    ]
+    redirect: '/dashboard'
   },
   {
     path: '/auth',
@@ -46,12 +19,27 @@ const routes = [
       }
     ]
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
   {
-    path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue')
+    path: '/dashboard',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/IndexPage.vue')
+      },
+      {
+        path: 'track',
+        component: () => import('pages/TrackPage.vue')
+      },
+      {
+        path: 'predictions',
+        component: () => import('pages/PredictionsPage.vue')
+      },
+      {
+        path: 'history',
+        component: () => import('pages/HistoryPage.vue')
+      }
+    ]
   }
 ]
 

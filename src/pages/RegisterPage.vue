@@ -1,25 +1,24 @@
 <template>
-  <q-page class="flex flex-center bg-grey-2">
-    <q-card class="register-card q-pa-lg" style="width: 400px">
+  <q-page class="flex flex-center">
+    <q-card class="register-card" style="width: 400px">
       <q-card-section class="text-center">
-        <div class="text-h5 text-primary text-weight-bold">Create Account</div>
-        <div class="text-grey-7 q-mt-sm">Join AllergyX to start tracking your triggers</div>
+        <div class="text-h5 text-primary text-weight-bold q-mb-md">Create Account</div>
       </q-card-section>
 
       <q-card-section>
-        <q-form @submit="onSubmit" class="q-gutter-md">
+        <q-form @submit.prevent="onSubmit" class="q-gutter-md">
           <div class="row q-col-gutter-md">
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <q-input
-                v-model="firstName"
+                v-model="formData.firstName"
                 label="First Name"
                 filled
                 :rules="[val => !!val || 'First name is required']"
               />
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <q-input
-                v-model="lastName"
+                v-model="formData.lastName"
                 label="Last Name"
                 filled
                 :rules="[val => !!val || 'Last name is required']"
@@ -28,19 +27,25 @@
           </div>
 
           <q-input
-            v-model="email"
-            type="email"
+            v-model="formData.email"
             label="Email"
+            type="email"
             filled
-            :rules="[val => !!val || 'Email is required']"
+            :rules="[
+              val => !!val || 'Email is required',
+              val => isValidEmail(val) || 'Please enter a valid email'
+            ]"
           />
 
           <q-input
-            v-model="password"
-            :type="isPwd ? 'password' : 'text'"
+            v-model="formData.password"
             label="Password"
+            :type="isPwd ? 'password' : 'text'"
             filled
-            :rules="[val => !!val || 'Password is required']"
+            :rules="[
+              val => !!val || 'Password is required',
+              val => val.length >= 8 || 'Password must be at least 8 characters'
+            ]"
           >
             <template v-slot:append>
               <q-icon
@@ -51,28 +56,37 @@
             </template>
           </q-input>
 
-          <q-select
-            v-model="allergyTypes"
-            multiple
+          <q-input
+            v-model="formData.confirmPassword"
+            label="Confirm Password"
+            :type="isPwd ? 'password' : 'text'"
             filled
-            label="Select Your Allergies"
-            :options="allergyOptions"
+            :rules="[
+              val => !!val || 'Please confirm your password',
+              val => val === formData.password || 'Passwords do not match'
+            ]"
+          />
+
+          <q-checkbox
+            v-model="acceptTerms"
+            label="I agree to the Terms and Privacy Policy"
+            :rules="[val => val || 'You must agree to the terms']"
           />
 
           <q-btn
             type="submit"
             color="primary"
-            size="lg"
-            class="full-width"
+            class="full-width q-mt-lg"
             label="Create Account"
+            :loading="loading"
           />
         </q-form>
       </q-card-section>
 
-      <q-card-section class="text-center q-pa-none">
+      <q-card-section class="text-center">
         <p class="text-grey-7">
           Already have an account?
-          <router-link to="/login" class="text-primary">Sign in</router-link>
+          <router-link to="/auth/login" class="text-primary">Sign in</router-link>
         </p>
       </q-card-section>
     </q-card>
@@ -80,31 +94,75 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+
+export default defineComponent({
   name: 'RegisterPage',
-  data () {
-    return {
+
+  setup() {
+    const router = useRouter()
+    const $q = useQuasar()
+    const loading = ref(false)
+    const isPwd = ref(true)
+    const acceptTerms = ref(false)
+    const formData = ref({
       firstName: '',
       lastName: '',
       email: '',
       password: '',
-      isPwd: true,
-      allergyTypes: [],
-      allergyOptions: [
-        'Pollen',
-        'Dust',
-        'Pet Dander',
-        'Mold',
-        'Food Allergies',
-        'Other'
-      ]
+      confirmPassword: ''
+    })
+
+    const isValidEmail = (val) => {
+      const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+      return emailPattern.test(val)
     }
-  },
-  methods: {
-    onSubmit () {
-      // Handle registration logic here
-      this.$router.push('/login')
+
+    const onSubmit = async () => {
+      loading.value = true
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        $q.localStorage.set('isLoggedIn', true)
+        $q.localStorage.set('userName', `${formData.value.firstName} ${formData.value.lastName}`)
+        
+        router.push('/dashboard')
+        
+        $q.notify({
+          color: 'positive',
+          message: 'Registration successful!',
+          icon: 'check'
+        })
+      } catch (error) {
+        $q.notify({
+          color: 'negative',
+          message: 'Registration failed. Please try again.',
+          icon: 'error'
+        })
+      } finally {
+        loading.value = false
+      }
+    }
+
+    return {
+      formData,
+      isPwd,
+      acceptTerms,
+      loading,
+      isValidEmail,
+      onSubmit
     }
   }
-}
+})
 </script>
+
+<style lang="scss" scoped>
+.register-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+</style>
